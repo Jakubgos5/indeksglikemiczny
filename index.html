@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Indeks glikemiczny – baza produktów</title>
+<style>
+:root{--bg:#f4f5f8;--sf:#fff;--ink:#1b2033;--mute:#5b6278;--line:#dcdfe8;--ac:#3a46b5;--aci:#fff;--l:#1d7a4b;--m:#a8650a;--h:#c23a3a;--lb:#dff3e7;--mb:#fbeccf;--hb:#f9dcdc;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131d;--sf:#191d2b;--ink:#e6e9f4;--mute:#9aa2bc;--line:#2c3248;--ac:#8c97ff;--aci:#10131d;--l:#5fd39a;--m:#f0b45a;--h:#ff8a8a;--lb:#17382a;--mb:#3a2c12;--hb:#3d1b1b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10131d;--sf:#191d2b;--ink:#e6e9f4;--mute:#9aa2bc;--line:#2c3248;--ac:#8c97ff;--aci:#10131d;--l:#5fd39a;--m:#f0b45a;--h:#ff8a8a;--lb:#17382a;--mb:#3a2c12;--hb:#3d1b1b;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:880px;margin:0 auto;padding:18px 16px 48px}
+h1{font-size:clamp(1.9rem,7vw,3rem);line-height:1.02;margin:6px 0 8px;letter-spacing:-.025em}
+.sub{color:var(--mute);margin:0 0 14px;max-width:62ch}
+.leg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;font-size:.85rem}
+.tag{padding:3px 10px;border-radius:999px;font-weight:600}
+.tl{background:var(--lb);color:var(--l)}.tm{background:var(--mb);color:var(--m)}.th{background:var(--hb);color:var(--h)}.tn{background:var(--bg);color:var(--mute);border:1px solid var(--line)}.cl-n .bg{display:none}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:8px 0;z-index:5}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input,select,button{font:inherit;color:var(--ink)}
+input[type=search]{flex:1 1 200px;background:var(--sf);border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;min-width:0}
+select{background:var(--sf);border:1.5px solid var(--line);border-radius:10px;padding:11px 10px}
+:focus-visible{outline:3px solid var(--ac);outline-offset:1px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--sf);border-radius:999px;padding:5px 12px;font-size:.88rem;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed=true]{background:var(--ac);color:var(--aci);border-color:var(--ac)}
+details{background:var(--sf);border:1.5px solid var(--line);border-radius:12px;margin:10px 0;padding:0 14px}
+summary{padding:12px 0;cursor:pointer;font-weight:700}
+.mi{display:grid;grid-template-columns:1fr 84px 28px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.mi input{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:8px;padding:6px 8px}
+.x{border:0;background:none;font-size:1.2rem;cursor:pointer;color:var(--mute)}
+.tot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 0}
+.tot div{background:var(--bg);border-radius:10px;padding:8px 10px}
+.tot b{display:block;font-size:1.35rem}
+.tot span{font-size:.8rem;color:var(--mute)}
+.cnt{color:var(--mute);font-size:.9rem;margin:6px 0}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+li{background:var(--sf);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.top small{color:var(--mute);font-weight:400;margin-left:6px}
+.bg{height:8px;background:var(--bg);border-radius:4px;margin:8px 0;overflow:hidden}
+.bg i{display:block;height:100%;border-radius:4px}
+.cl-l i{background:var(--l)}.cl-m i{background:var(--m)}.cl-h i{background:var(--h)}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mute);font-size:.88rem;flex-wrap:wrap}
+.add{border:1.5px solid var(--ac);background:none;color:var(--ac);border-radius:8px;padding:4px 10px;cursor:pointer}
+.empty{text-align:center;color:var(--mute);padding:32px 0}
+.note{margin-top:28px;color:var(--mute);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>Indeks glikemiczny: baza produktów</h1>
+  <p class="sub">Sprawdź, jak szybko dany produkt podnosi poziom glukozy we krwi. Filtruj, sortuj i zestaw własny posiłek, żeby policzyć jego ładunek glikemiczny.</p>
+  <div class="leg"><span class="tag tl">niski IG ≤ 55</span><span class="tag tm">średni IG 56–69</span><span class="tag th">wysoki IG ≥ 70</span><span class="tag tn">IG nie dotyczy (brak węglowodanów)</span></div>
+  <div class="bar">
+    <div class="row">
+      <input id="q" type="search" placeholder="Szukaj: ryż, jabłko, miód…" aria-label="Szukaj produktu" autocomplete="off">
+      <select id="cl" aria-label="Przedział IG"><option value="">Każdy IG</option><option value="l">Niski (≤ 55)</option><option value="m">Średni (56–69)</option><option value="h">Wysoki (≥ 70)</option></select>
+      <select id="so" aria-label="Sortowanie"><option value="ga">IG rosnąco</option><option value="gd">IG malejąco</option><option value="la">ŁG rosnąco</option><option value="ld">ŁG malejąco</option><option value="n">Nazwa A–Z</option></select>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Kategorie"></div>
+  </div>
+  <details id="meal"><summary id="ms">Mój posiłek (0)</summary><div id="mb"><p class="cnt">Dodaj produkty przyciskiem „Do posiłku” i wpisz masę porcji w gramach.</p></div></details>
+  <div class="cnt" id="cnt" aria-live="polite"></div>
+  <ul id="out"></ul>
+  <p class="note">IG (indeks glikemiczny) skala 0–100 względem glukozy. ŁG (ładunek glikemiczny) = IG × węglowodany przyswajalne ÷ 100. Węglowodany podano w g na 100 g produktu w formie, w jakiej się go zwykle je (np. kasze i ryż po ugotowaniu). Dla warzyw niskoskrobiowych przyjęto umownie IG 15. Produkty bez węglowodanów (mięso, jaja, ryby, tłuszcze, sól, przyprawy) nie mają IG, bo test IG ich nie obejmuje, więc są oznaczone „IG nie dotyczy” i wyświetlane na końcu listy. Pozycje oznaczone „szac.” to szacunki na podstawie składników lub podobnych produktów, a nie pomiary. Wartości są przybliżone i opracowane na podstawie międzynarodowych tabel IG (Atkinson, Foster-Powell, Brand-Miller, Diabetes Care 2008) oraz bazy glycemicindex.com. Realny odczyn zależy od odmiany, dojrzałości, obróbki i całego posiłku. To nie jest porada medyczna: przy cukrzycy skonsultuj jadłospis z lekarzem lub dietetykiem.</p>
+</div>
+<script>
+const CAT={p:'Pieczywo',z:'Zboża i makarony',w:'Warzywa',o:'Owoce',n:'Nabiał i napoje roślinne',b:'Strączkowe i orzechy',d:'Słodycze i przekąski',s:'Cukry i słodziki',k:'Napoje',g:'Dania gotowe',m:'Białko i tłuszcze (bez węglowodanów)',u:'Sosy, przyprawy i dodatki'};
+const RAW=`p|Chleb biały pszenny|75|47
+p|Chleb tostowy|75|46
+p|Chleb pszenny razowy|74|42
+p|Chleb żytni razowy|58|40
+p|Chleb na zakwasie żytnim|48|40
+p|Pumpernikiel|46|40
+p|Chleb wieloziarnisty|53|38
+p|Chleb bezglutenowy|70|45
+p|Bułka kajzerka|73|50
+p|Bagietka|95|55
+p|Chałka|65|48
+p|Bagel|72|50
+p|Pita biała|68|55
+p|Tortilla pszenna|52|48
+p|Naan|71|50
+p|Rogalik croissant|67|43
+p|Wafle ryżowe|82|80
+p|Pieczywo chrupkie żytnie|64|65
+p|Krakersy|74|68
+z|Ryż biały gotowany|73|28
+z|Ryż basmati gotowany|58|25
+z|Ryż brązowy gotowany|68|23
+z|Ryż jaśminowy gotowany|89|28
+z|Ryż parboiled gotowany|47|26
+z|Kasza gryczana gotowana|54|20
+z|Kasza jaglana gotowana|71|23
+z|Kasza jęczmienna (pęczak) gotowana|28|24
+z|Kasza manna gotowana|66|17
+z|Kuskus gotowany|65|23
+z|Bulgur gotowany|48|19
+z|Komosa ryżowa gotowana|53|18
+z|Polenta gotowana|68|13
+z|Spaghetti gotowane|49|25
+z|Makaron pełnoziarnisty gotowany|48|24
+z|Makaron ryżowy gotowany|61|25
+z|Makaron sojowy gotowany|33|20
+z|Płatki owsiane na wodzie|55|12
+z|Płatki owsiane błyskawiczne|66|12
+z|Musli bez cukru|57|60
+z|Płatki kukurydziane|81|84
+z|Popcorn|65|63
+w|Ziemniaki gotowane|78|17
+w|Ziemniaki pieczone|85|20
+w|Puree ziemniaczane|87|15
+w|Frytki|75|34
+w|Bataty gotowane|63|20
+w|Marchew gotowana|39|8
+w|Marchew surowa|35|7
+w|Burak gotowany|64|8
+w|Dynia|75|5
+w|Kukurydza gotowana|52|19
+w|Groszek zielony|48|10
+w|Pasternak gotowany|97|13
+w|Pomidory|15|3
+w|Ogórek|15|2
+w|Brokuł|15|4
+w|Kalafior|15|4
+w|Szpinak|15|1
+w|Kapusta biała|15|4
+w|Kapusta kiszona|15|2
+w|Ogórki kiszone|15|2
+w|Cebula|15|8
+w|Papryka|15|4
+w|Cukinia|15|3
+w|Pieczarki|15|2
+w|Sałata|15|2
+w|Bakłażan|15|4
+w|Awokado|15|1
+o|Arbuz|76|8
+o|Daktyle suszone|42|65
+o|Banan dojrzały|51|23
+o|Jabłko|36|14
+o|Gruszka|38|15
+o|Pomarańcza|43|9
+o|Grejpfrut|25|8
+o|Winogrona|53|17
+o|Truskawki|40|6
+o|Maliny|25|5
+o|Borówki|53|12
+o|Wiśnie|22|12
+o|Śliwki|39|10
+o|Brzoskwinia|42|10
+o|Morele świeże|34|9
+o|Morele suszone|30|50
+o|Mango|51|15
+o|Ananas|59|12
+o|Kiwi|53|12
+o|Melon|65|8
+o|Rodzynki|64|70
+o|Figi suszone|61|50
+o|Śliwki suszone|29|50
+o|Papaja|59|10
+o|Mandarynki|47|10
+n|Mleko pełne|39|5
+n|Mleko odtłuszczone|37|5
+n|Mleko sojowe|34|3
+n|Mleko owsiane|69|7
+n|Mleko ryżowe|86|10
+n|Mleko skondensowane słodzone|61|55
+n|Jogurt naturalny|36|5
+n|Jogurt owocowy słodzony|41|14
+n|Lody waniliowe|51|22
+b|Soczewica czerwona gotowana|26|17
+b|Soczewica zielona gotowana|30|17
+b|Ciecierzyca gotowana|28|20
+b|Fasola czerwona gotowana|24|17
+b|Fasola biała gotowana|31|18
+b|Fasola czarna gotowana|30|20
+b|Groch łuskany gotowany|22|14
+b|Soja gotowana|16|6
+b|Hummus|6|10
+b|Tofu|15|2
+b|Orzeszki ziemne|14|8
+b|Orzechy nerkowca|22|30
+b|Migdały|15|5
+d|Czekolada mleczna|43|57
+d|Czekolada gorzka 70%|23|35
+d|Snickers|51|55
+d|Mars|65|66
+d|Krem orzechowo-kakaowy|33|57
+d|Ciasteczka maślane|64|70
+d|Herbatniki digestive|59|65
+d|Pączek|76|45
+d|Gofry|76|37
+d|Naleśniki|67|36
+d|Muffin|60|50
+d|Chipsy ziemniaczane|56|50
+d|Żelki|78|78
+d|Baton musli|61|60
+d|Chipsy tortilla|63|50
+s|Glukoza|100|100
+s|Sacharoza (cukier biały)|65|100
+s|Fruktoza|15|100
+s|Maltoza|105|100
+s|Laktoza|46|100
+s|Miód|61|82
+s|Syrop klonowy|54|67
+s|Syrop z agawy|15|76
+s|Cukier kokosowy|54|92
+s|Ksylitol|12|100
+s|Dżem|51|65
+k|Sok pomarańczowy|50|9
+k|Sok jabłkowy|41|12
+k|Sok marchwiowy|43|8
+k|Sok pomidorowy|33|3
+k|Cola|63|11
+k|Napój izotoniczny|78|6
+k|Napój energetyczny|70|11
+g|Pizza serowa|60|30
+g|Sushi|52|28
+g|Nuggetsy z kurczaka|46|15
+g|Makaron z serem|64|20
+g|Zupa pomidorowa|38|6
+p|Chleb na zakwasie pszennym|54|45
+p|Ciasto francuskie|56|45
+z|Ryż dziki gotowany|57|21
+z|Makaron udon gotowany|55|21
+z|Makaron soba gotowany|46|21
+z|Makaron instant gotowany|47|27
+z|Gnocchi gotowane|68|30
+z|Płatki ryżowe ekspandowane|82|85
+w|Brukselka|15|5
+w|Szparagi|15|2
+w|Rzodkiewka|15|2
+w|Kalarepa|15|4
+w|Rukola|15|2
+w|Kapusta czerwona|15|5
+w|Fasolka szparagowa|15|4
+w|Oliwki|15|1
+w|Bób gotowany|79|7
+o|Czereśnie|25|12
+o|Nektarynka|43|9
+o|Banan niedojrzały|42|20
+o|Jabłka suszone|29|57
+o|Brzoskwinie z puszki|52|10
+n|Jogurt grecki naturalny|11|4
+n|Budyń waniliowy|43|17
+n|Mleko czekoladowe|37|10
+b|Fasola w sosie pomidorowym|40|13
+b|Fasola pinto gotowana|39|20
+b|Ciecierzyca z puszki|42|13
+b|Orzechy włoskie|15|7
+b|Masło orzechowe|14|13
+d|Biszkopt|46|58
+d|Twix|44|60
+d|Kit Kat|70|60
+d|Precle|83|74
+s|Cukier brązowy|64|97
+s|Syrop ryżowy|98|80
+s|Miód akacjowy|32|82
+k|Sok grejpfrutowy|48|9
+k|Sok ananasowy|46|13
+k|Sok winogronowy|59|16
+k|Kawa czarna bez cukru|0|0
+k|Herbata bez cukru|0|0
+k|Woda|0|0
+g|Lasagne|28|13
+g|Ravioli z mięsem|39|24
+g|Zupa grochowa|66|8
+p|Bułka hamburgerowa|61|48
+z|Ryż długoziarnisty gotowany|56|28
+z|Penne gotowane|50|25
+z|Płatki czekoladowe kulki|77|84
+z|Cheerios|74|74
+z|All-Bran|42|46
+z|Weetabix|74|67
+w|Pomidory z puszki|15|4
+w|Ketchup|55|25
+k|Fanta|68|12
+m|Jajka|0|0
+m|Masło|0|0
+m|Ser żółty|0|0
+m|Ser mozzarella|0|0
+m|Ser feta|0|0
+m|Szynka|0|0
+m|Kiełbasa|0|0
+m|Boczek|0|0
+m|Pierś z kurczaka|0|0
+m|Mięso mielone|0|0
+m|Schab|0|0
+m|Łosoś|0|0
+m|Tuńczyk w oleju|0|0
+m|Śledź|0|0
+m|Oliwa z oliwek|0|0
+m|Olej rzepakowy|0|0
+m|Wołowina polędwica|0|0
+m|Wołowina antrykot|0|0
+m|Wołowina rostbef|0|0
+m|Wołowina mielona|0|0
+m|Wieprzowina karkówka|0|0
+m|Żeberka wieprzowe|0|0
+m|Golonka|0|0
+m|Polędwica wieprzowa|0|0
+m|Mięso mielone wieprzowe|0|0
+m|Filet z indyka|0|0
+m|Udo indyka|0|0
+m|Indyk mielony|0|0
+m|Kaczka|0|0
+m|Gęś|0|0
+m|Kurczak cały|0|0
+m|Udko kurczaka|0|0
+m|Skrzydełka kurczaka|0|0
+m|Wątróbka drobiowa|0|0
+m|Wątroba wieprzowa|0|0
+m|Królik|0|0
+m|Jagnięcina|0|0
+m|Cielęcina|0|0
+m|Szynka wiejska|0|0
+m|Polędwica sopocka|0|0
+m|Salami|0|0
+m|Kabanosy|0|0
+m|Kiełbasa śląska|0|0
+m|Kiełbasa biała|0|0
+m|Dorsz|0|0
+m|Mintaj|0|0
+m|Pstrąg|0|0
+m|Makrela|0|0
+m|Sardynki w oleju|0|0
+m|Szprotki w oleju|0|0
+m|Karp|0|0
+m|Sandacz|0|0
+m|Halibut|0|0
+m|Pangasius|0|0
+m|Tilapia|0|0
+m|Węgorz|0|0
+m|Śledź matjas|0|0
+m|Krewetki|0|0
+m|Kalmary|0|0
+m|Małże|0|0
+m|Ośmiornica|0|0
+m|Łosoś wędzony|0|0
+m|Parmezan|0|0
+m|Grana Padano|0|0
+m|Gouda|0|0
+m|Edam|0|0
+m|Cheddar|0|0
+m|Camembert|0|0
+m|Brie|0|0
+m|Gorgonzola|0|0
+m|Roquefort|0|0
+m|Ser gruyère|0|0
+m|Ser emmentaler|0|0
+m|Oscypek|0|0
+m|Halloumi|0|0
+m|Ser kozi|0|0
+m|Masło klarowane|0|0
+m|Smalec|0|0
+m|Słonina|0|0
+m|Margaryna|0|0
+m|Olej słonecznikowy|0|0
+m|Olej kokosowy|0|0
+m|Olej lniany|0|0
+m|Tran|0|0
+m|Jajka przepiórcze|0|0
+m|Białko jaja|0|0
+w|Seler naciowy|15|2
+w|Szczypiorek|15|2
+w|Czosnek|15|6
+w|Jarmuż|15|4
+w|Kapusta pekińska|15|2
+w|Kapusta włoska|15|4
+w|Sałata lodowa|15|2
+w|Roszponka|15|1
+w|Fenkuł|15|4
+w|Pak choi|15|1
+w|Szczaw|15|3
+w|Rabarbar|15|2
+w|Karczochy|15|5
+w|Kiełki|15|3
+w|Boczniaki|15|3
+w|Kurki|15|1
+w|Borowiki|15|2
+w|Pomidory koktajlowe|15|3
+w|Papryka chili|15|7
+w|Cykoria|15|3
+w|Rzodkiew|15|3
+w|Szalotka|15|7
+w|Por|15|3
+w|Cebula czerwona|15|8
+w|Natka pietruszki|15|1
+w|Brokuł mrożony|15|4
+w|Kalafior mrożony|15|4
+w|Szpinak mrożony|15|1
+w|Seler korzeń|35|7|e
+w|Buraki konserwowe|64|10|e
+w|Ogórki konserwowe|15|3|e
+w|Dynia hokkaido|75|5|e
+w|Ziemniaki młode gotowane|57|15|e
+w|Maniok gotowany|46|36|e
+w|Taro gotowane|48|20|e
+w|Pochrzyn gotowany|37|23|e
+w|Plantan smażony|55|30|e
+o|Persymona|50|18|e
+o|Liczi świeże|57|16|e
+o|Granat|35|17|e
+o|Figi świeże|35|19|e
+o|Jeżyny|25|5|e
+o|Czarna porzeczka|25|7|e
+o|Agrest|25|6|e
+o|Pomelo|30|9|e
+o|Cytryna|20|3|e
+o|Guawa|12|8|e
+o|Żurawina suszona|64|80|e
+o|Ananas z puszki|62|15|e
+o|Mus jabłkowy bez cukru|35|12|e
+o|Melon miodowy|65|8|e
+o|Kokos świeży|45|6|e
+o|Owoce leśne mrożone|35|6|e
+o|Gruszki z puszki|44|12|e
+o|Mandarynki z puszki|47|10|e
+z|Żyto gotowane ziarno|34|28|e
+z|Orkisz gotowany|45|28|e
+z|Amarantus gotowany|35|18|e
+z|Fettuccine gotowane|40|27|e
+z|Tortellini z serem|50|30|e
+z|Ryż arborio (risotto)|69|27|e
+z|Ryż kleisty|98|24|e
+z|Granola|55|60|e
+z|Otręby owsiane|55|40|e
+z|Tapioka gotowana|70|20|e
+z|Skorupki taco|68|60|e
+z|Tortilla kukurydziana|46|45|e
+z|Freekeh gotowany|43|22|e
+z|Special K|69|75|e
+z|Chrupki kukurydziane|72|70|e
+z|Ryż czerwony gotowany|55|24|e
+p|Bułka grahamka|70|45|e
+p|Chleb pszenno-żytni|65|43|e
+p|Chleb orkiszowy|63|40|e
+p|Chleb żytni pełnoziarnisty|50|38|e
+p|Chleb baltonowski|65|42|e
+p|English muffin|77|44|e
+p|Ciabatta|70|48|e
+p|Focaccia|70|45|e
+p|Pita pełnoziarnista|57|45|e
+p|Bułka maślana|70|52|e
+p|Drożdżówka z serem|65|40|e
+p|Chleb kukurydziany|65|40|e
+p|Tosty pełnoziarniste|60|42|e
+p|Ciasto na pizzę cienkie|60|50|e
+n|Kefir|36|4|e
+n|Maślanka|35|4|e
+n|Jogurt sojowy|50|6|e
+n|Twaróg półtłusty|30|3|e
+n|Serek wiejski|30|3|e
+n|Śmietana 18%|30|3|e
+n|Mleko kokosowe|40|3|e
+n|Mleko migdałowe|30|1|e
+n|Lody czekoladowe|43|25|e
+n|Jogurt pitny owocowy|40|11|e
+n|Mleko 2%|38|5|e
+b|Pistacje|15|18|e
+b|Orzechy laskowe|15|5|e
+b|Orzechy pekan|10|4|e
+b|Orzechy brazylijskie|15|3|e
+b|Nasiona słonecznika|35|18|e
+b|Pestki dyni|25|4|e
+b|Nasiona chia|1|2|e
+b|Siemię lniane|35|2|e
+b|Sezam|35|10|e
+b|Fasola mung|38|19|e
+b|Fasola adzuki|35|20|e
+b|Fasola lima|32|20|e
+b|Soczewica brązowa gotowana|29|17|e
+b|Edamame|18|5|e
+b|Tempeh|15|8|e
+b|Natto|33|8|e
+d|Czekolada biała|44|58|e
+d|Milky Way|62|70|e
+d|Marshmallow|62|80|e
+d|Ciasto czekoladowe|38|50|e
+d|Ciastka owsiane|55|65|e
+d|Szarlotka|50|35|e
+d|Sernik|40|25|e
+d|Makowiec|45|40|e
+d|Piernik|65|65|e
+d|Faworki|70|55|e
+d|Cukierki karmelowe|75|85|e
+d|Landrynki|80|98|e
+d|Krówki|60|70|e
+d|Chałwa|50|50|e
+d|Prince Polo|55|60|e
+d|Baton Bounty|55|55|e
+d|Kinder Bueno|45|50|e
+d|Chrupki serowe|72|55|e
+d|Baton zbożowy|60|65|e
+d|Orzeszki w czekoladzie|35|45|e
+d|Rodzynki w czekoladzie|55|60|e
+d|Wafelek kruchy|60|65|e
+s|Cukier puder|65|100|e
+s|Cukier trzcinowy|65|98|e
+s|Melasa|55|68|e
+s|Stewia|0|0
+s|Erytrytol|1|0|e
+s|Aspartam|0|0
+k|Piwo jasne|66|3|e
+k|Wino czerwone wytrawne|0|0
+k|Wino białe wytrawne|0|0
+k|Wódka|0|0
+k|Whisky|0|0
+k|Rum|0|0
+k|Woda gazowana|0|0
+k|Woda smakowa niesłodzona|0|0
+k|Sprite|58|10|e
+k|Pepsi|63|11|e
+k|Woda kokosowa|54|4|e
+k|Herbata zielona|0|0
+k|Herbata owocowa bez cukru|0|0
+k|Smoothie owocowe|38|12|e
+k|Sok wieloowocowy|50|11|e
+k|Kakao słodzone na mleku|40|12|e
+u|Majonez|0|1|e
+u|Musztarda|0|5|e
+u|Ocet jabłkowy|0|0
+u|Ocet balsamiczny|0|15|e
+u|Sól|0|0
+u|Pieprz|0|0
+u|Papryka słodka mielona|0|0
+u|Cynamon|0|0
+u|Kurkuma|0|0
+u|Zioła prowansalskie|0|0
+u|Oregano|0|0
+u|Płatki chili|0|0
+u|Sos pomidorowy|15|6|e
+u|Pesto|0|4|e
+u|Guacamole|15|4|e
+u|Żelatyna|0|0
+u|Kakao naturalne|20|10|e
+u|Marmolada|55|65|e
+u|Bazylia świeża|15|1
+g|Pierogi ruskie|55|30|e
+g|Pierogi z mięsem|50|25|e
+g|Pierogi z kapustą i grzybami|50|25|e
+g|Pierogi z owocami|55|28|e
+g|Kopytka|68|32|e
+g|Kluski śląskie|75|30|e
+g|Placki ziemniaczane|75|25|e
+g|Naleśniki z serem|55|25|e
+g|Racuchy|70|35|e
+g|Kotlet schabowy panierowany|45|10|e
+g|Bigos|15|5|e
+g|Gołąbki|35|10|e
+g|Gulasz wieprzowy|15|4|e
+g|Rosół z makaronem|40|6|e
+g|Barszcz czerwony|35|5|e
+g|Zupa ogórkowa|40|6|e
+g|Żurek z jajkiem i ziemniakami|45|8|e
+g|Zupa jarzynowa|35|6|e
+g|Hot dog w bułce|60|25|e
+g|Kebab w picie|55|25|e
+g|Tosty z serem|60|35|e
+g|Kanapka z szynką i serem|55|30|e
+g|Spaghetti bolognese|52|20|e
+g|Chilli con carne|40|12|e
+g|Sałatka jarzynowa|55|10|e
+g|Surówka z kapusty|15|4|e
+g|Sałatka grecka|15|3|e
+g|Kluski leniwe|55|28|e
+g|Hamburger z bułką|60|25|e
+g|Ryż z kurczakiem|60|25|e`;
+const D=RAW.split('\n').map((l,i)=>{const[k,n,g,c,e]=l.split('|');return{id:i,k,n,e:!!e,na:+g===0||+c===0,g:+g,c:+c,gl:Math.round(g*c/100)}});
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ł/g,'l').toLowerCase();
+D.forEach(d=>d.t=norm(d.n+' '+CAT[d.k]));
+const cls=g=>g<=55?'l':g<=69?'m':'h';
+const LB={l:'niski',m:'średni',h:'wysoki',n:'nie dotyczy'};
+const glc=v=>v<=10?'l':v<=19?'m':'h';
+const $=id=>document.getElementById(id);
+let cat='';const meal=new Map();
+function chips(){$('chips').innerHTML=[['','Wszystko']].concat(Object.entries(CAT)).map(([k,v])=>`<button class="chip" data-k="${k}" aria-pressed="${cat===k}">${v}</button>`).join('')}
+function render(){
+  const w=norm($('q').value.trim()).split(/\s+/).filter(Boolean),c=$('cl').value,s=$('so').value;
+  const r=D.filter(d=>(!cat||d.k===cat)&&(!c||(d.na?'n':cls(d.g))===c)&&w.every(x=>d.t.includes(x)));
+  r.sort((a,b)=>s==='ga'?(a.na-b.na)||a.g-b.g||a.n.localeCompare(b.n,'pl'):s==='gd'?(a.na-b.na)||b.g-a.g:s==='la'?a.gl-b.gl:s==='ld'?b.gl-a.gl:a.n.localeCompare(b.n,'pl'));
+  $('cnt').textContent=`Znaleziono: ${r.length} z ${D.length}`;
+  $('out').innerHTML=r.length?r.map(d=>{const k=d.na?'n':cls(d.g);return `<li class="cl-${k}"><div class="top"><b>${d.n}<small>${CAT[d.k]}</small></b><span class="tag t${k}">${d.na?'IG nie dotyczy':'IG '+d.g+(d.e?' (szac.)':'')+' · '+LB[k]}</span></div><div class="bg"><i style="width:${Math.min(d.g,100)}%"></i></div><div class="meta"><span>Węglowodany ${d.c} g/100 g · ŁG ${d.gl}/100 g</span><button class="add" data-id="${d.id}">+ Do posiłku</button></div></li>`}).join(''):'<li class="empty">Nic nie pasuje do filtrów. Zmień wyszukiwanie lub kategorię.</li>';
+}
+function renderMeal(){
+  $('ms').textContent=`Mój posiłek (${meal.size})`;
+  if(!meal.size){$('mb').innerHTML='<p class="cnt">Dodaj produkty przyciskiem „Do posiłku” i wpisz masę porcji w gramach.</p>';return}
+  $('mb').innerHTML=[...meal].map(([id,g])=>`<div class="mi"><span>${D[id].n}</span><input type="number" min="0" step="10" value="${g}" data-id="${id}" aria-label="Masa w gramach: ${D[id].n}"><button class="x" data-rm="${id}" aria-label="Usuń ${D[id].n}">×</button></div>`).join('')+'<div class="tot" id="tot"></div>';
+  totals();
+}
+function totals(){
+  let carb=0,gl=0;
+  meal.forEach((g,id)=>{const d=D[id],cb=d.c*g/100;carb+=cb;gl+=cb*d.g/100});
+  const gi=carb?Math.round(gl/carb*100):0,k=glc(gl);
+  $('tot').innerHTML=`<div><b>${Math.round(carb)} g</b><span>węglowodany</span></div><div><b>${gi}</b><span>średni IG (ważony)</span></div><div><b class="tag t${k}">${Math.round(gl)}</b><span>ŁG posiłku: ${LB[k]}</span></div>`;
+}
+$('q').oninput=render;$('cl').onchange=render;$('so').onchange=render;
+$('chips').onclick=e=>{const b=e.target.closest('.chip');if(b){cat=b.dataset.k;chips();render()}};
+$('out').onclick=e=>{const b=e.target.closest('.add');if(!b)return;const id=+b.dataset.id;if(!meal.has(id))meal.set(id,100);renderMeal();$('meal').open=true};
+$('mb').oninput=e=>{const i=e.target.closest('input');if(i){meal.set(+i.dataset.id,Math.max(0,+i.value||0));totals()}};
+$('mb').onclick=e=>{const b=e.target.closest('.x');if(b){meal.delete(+b.dataset.rm);renderMeal()}};
+chips();render();
+</script>
+</body>
+</html>
